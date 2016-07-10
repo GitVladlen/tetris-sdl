@@ -64,7 +64,7 @@ void App::Loop() {
 void App::Render() {
 	SDL_RenderClear(Renderer);
 
-	TextureBank::Get("Test")->Render(0, 0); // You should really check your pointers
+	TextureBank::Get("tex1")->Render(0, 0); // You should really check your pointers
 
 	SDL_RenderPresent(Renderer);
 }
