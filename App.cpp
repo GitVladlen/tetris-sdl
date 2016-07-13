@@ -145,6 +145,10 @@ void App::OnExit() {
 SDL_Renderer* App::GetRenderer() { return Renderer; }
 
 //==============================================================================
+SDL_Surface* App::GetPrimarySurface() { return PrimarySurface; }
+
+
+//==============================================================================
 App* App::GetInstance() { return &App::Instance; }
 
 int App::GetWindowWidth()  { return WindowWidth; }

@@ -11,12 +11,6 @@ class CAppStateIntro : public CAppState {
 
         int StartTime;
 
-        SDL_Surface* Surf_Text;
-
-        SDL_Texture* SDL_Text_Texture;
-
-        TTF_Font* Font;
-
     private:
         CAppStateIntro();
 

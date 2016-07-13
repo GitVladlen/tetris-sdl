@@ -58,6 +58,7 @@ class App : public CEvent {
 
 	public:
 		SDL_Renderer* GetRenderer();
+		SDL_Surface* GetPrimarySurface();
 
 	public:
 		static App* GetInstance();

@@ -14,6 +14,8 @@ bool TextureBank::Init() {
 	SDL_Renderer* Renderer = App::GetInstance()->GetRenderer();
 	if(!Renderer) return false;
 
+
+
 	std::vector<std::string> Files = FileManager::GetFilesInFolder("Textures"); // Relative to CWD
 
 	for(auto Filename : Files) {
@@ -21,7 +23,7 @@ bool TextureBank::Init() {
 		std::string ID  = FileManager::GetFilenameWithoutExt(Filename);
 
         // Skip all non-png files
-        if(Ext != "png") continue;
+        if(Ext != "png" && Ext != "bmp") continue;
 
 		Log("Add Texture : ID = %s : Filename = %s : Ext = %s", ID.c_str(), Filename.c_str(), Ext.c_str());
 		AddTexture(Renderer, ID, Filename);

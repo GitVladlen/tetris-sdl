@@ -29,6 +29,17 @@
 		</Linker>
 		<Unit filename="App.cpp" />
 		<Unit filename="App.h" />
+		<Unit filename="CAppState.cpp" />
+		<Unit filename="CAppState.h" />
+		<Unit filename="CAppStateIntro.cpp" />
+		<Unit filename="CAppStateIntro.h" />
+		<Unit filename="CAppStateMainMenu.cpp" />
+		<Unit filename="CAppStateMainMenu.h" />
+		<Unit filename="CAppStateManager.cpp" />
+		<Unit filename="CAppStateManager.h" />
+		<Unit filename="CEvent.cpp" />
+		<Unit filename="CEvent.h" />
+		<Unit filename="Define.h" />
 		<Unit filename="FileManager.cpp" />
 		<Unit filename="FileManager.h" />
 		<Unit filename="Log.h" />

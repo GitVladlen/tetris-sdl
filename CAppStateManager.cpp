@@ -2,7 +2,7 @@
 
 // Refer to your Other App States Here
 #include "CAppStateIntro.h"
-//#include "CAppStateMainMenu.h"
+#include "CAppStateMainMenu.h"
 //#include "CAppStateGameTetrisClassic.h"
 //#include "CAppStateGameTetrisDual.h"
 
@@ -27,7 +27,7 @@ void CAppStateManager::SetActiveAppState(int AppStateID) {
     // Also, add your App State Here so that the Manager can switch to it
     if(AppStateID == APPSTATE_NONE)        ActiveAppState = 0;
     if(AppStateID == APPSTATE_INTRO)    ActiveAppState = CAppStateIntro::GetInstance();
-//    if(AppStateID == APPSTATE_MAIN_MENU)    ActiveAppState = CAppStateMainMenu::GetInstance();
+    if(AppStateID == APPSTATE_MAIN_MENU)    ActiveAppState = CAppStateMainMenu::GetInstance();
 //    if(AppStateID == APPSTATE_GAME_TETRIS_CLASSIC)    ActiveAppState = CAppStateGameTetrisClassic::GetInstance();
 //    if(AppStateID == APPSTATE_GAME_TETRIS_DUAL)    ActiveAppState = CAppStateGameTetrisDual::GetInstance();
 
