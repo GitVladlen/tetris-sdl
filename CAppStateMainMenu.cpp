@@ -13,7 +13,7 @@ CAppStateMainMenu::CAppStateMainMenu() {
 void CAppStateMainMenu::OnKeyDown(SDL_Keycode sym) {
     switch(sym) {
         case SDLK_1 : {
-//            CAppStateManager::SetActiveAppState(APPSTATE_GAME_TETRIS_CLASSIC);
+            CAppStateManager::SetActiveAppState(APPSTATE_GAME_TETRIS_CLASSIC);
         } break;
 
         case SDLK_2 : {

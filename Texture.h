@@ -35,6 +35,8 @@ class Texture {
 
 		void Render(int X, int Y, int Width, int Height);
 
+		void Render(int X, int Y, int SX, int SY, int SWidth, int SHeight);
+
 		void Render(int X, int Y, int Width, int Height, int SX, int SY, int SWidth, int SHeight);
 
 		int GetWidth();

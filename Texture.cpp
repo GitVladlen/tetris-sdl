@@ -59,6 +59,13 @@ void Texture::Render(int X, int Y, int Width, int Height) {
 }
 
 //------------------------------------------------------------------------------
+void Texture::Render(int X, int Y, int SX, int SY, int SWidth, int SHeight) {
+	SDL_Rect Source = {SX, SY, SWidth, SHeight};
+	SDL_Rect Destination = {X, Y, SWidth, SHeight};
+
+	SDL_RenderCopy(Renderer, SDLTexture, &Source, &Destination);
+}
+//------------------------------------------------------------------------------
 void Texture::Render(int X, int Y, int Width, int Height, int SX, int SY, int SWidth, int SHeight) {
 	SDL_Rect Source = {SX, SY, SWidth, SHeight};
 	SDL_Rect Destination = {X, Y, Width, Height};
