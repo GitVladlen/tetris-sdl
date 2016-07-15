@@ -1,17 +1,17 @@
-#include "CAppStateGameTetrisClassic.h"
+#include "CAppStateGameTetrisDual.h"
 
 #include "CAppStateManager.h"
 #include "Log.h"
 #include "App.h"
 
 
-CAppStateGameTetrisClassic CAppStateGameTetrisClassic::Instance;
+CAppStateGameTetrisDual CAppStateGameTetrisDual::Instance;
 
-CAppStateGameTetrisClassic::CAppStateGameTetrisClassic() {
+CAppStateGameTetrisDual::CAppStateGameTetrisDual() {
     Tetris_1 = NULL;
 }
 
-void CAppStateGameTetrisClassic::OnKeyDown(SDL_Keycode sym) {
+void CAppStateGameTetrisDual::OnKeyDown(SDL_Keycode sym) {
 
     if(sym == SDLK_ESCAPE || sym == SDLK_q)
         CAppStateManager::SetActiveAppState(APPSTATE_MAIN_MENU);
@@ -19,13 +19,17 @@ void CAppStateGameTetrisClassic::OnKeyDown(SDL_Keycode sym) {
     if(sym == SDLK_p || sym == SDLK_SPACE) {
         if(Tetris_1->Pause) {
             Tetris_1->Pause = false;
+            Tetris_2->Pause = false;
         } else {
-            if(!Tetris_1->IsGameOver())
+            if(!Tetris_1->IsGameOver()) {
                 Tetris_1->Pause = true;
+                Tetris_2->Pause = true;
+            }
         }
     }
 
     if(!Tetris_1->IsGameOver()) {
+        //Tetris_1
         switch(sym) {
             case SDLK_LEFT : {
                 Tetris_1->MoveFigureLeft(true);
@@ -46,20 +50,50 @@ void CAppStateGameTetrisClassic::OnKeyDown(SDL_Keycode sym) {
             default: {
             }
         }
+
+        //Tetris_2
+        switch(sym) {
+            case SDLK_a : {
+                Tetris_2->MoveFigureLeft(true);
+            } break;
+
+            case SDLK_d : {
+                Tetris_2->MoveFigureRight(true);
+            } break;
+
+            case SDLK_w : {
+                Tetris_2->FigureRotate(true);
+            } break;
+
+            case SDLK_s: {
+                Tetris_2->SpeedUp();
+            } break;
+
+            default: {
+            }
+        }
+
     } else {
+
         switch(sym) {
             case SDLK_SPACE : {
                 Tetris_1->Reset();
+                Tetris_2->Reset();
             } break;
 
 
             default: {
             }
         }
+
+
     }
+
+
 }
 
-void CAppStateGameTetrisClassic::OnKeyUp(SDL_Keycode sym){
+void CAppStateGameTetrisDual::OnKeyUp(SDL_Keycode sym) {
+    //Tetris_1
     if(!Tetris_1->IsGameOver()) {
         switch(sym) {
             case SDLK_DOWN : {
@@ -82,19 +116,38 @@ void CAppStateGameTetrisClassic::OnKeyUp(SDL_Keycode sym){
             }
         }
     }
+
+    //Tetris_2
+    if(!Tetris_1->IsGameOver()) {
+        switch(sym) {
+            case SDLK_s : {
+                Tetris_2->SpeedDown();
+            } break;
+
+            case SDLK_d : {
+                Tetris_2->MoveFigureRight(false);
+            } break;
+
+            case SDLK_a : {
+                Tetris_2->MoveFigureLeft(false);
+            } break;
+
+            case SDLK_w : {
+                Tetris_2->FigureRotate(false);
+            } break;
+
+            default: {
+            }
+        }
+    }
 }
 
-void CAppStateGameTetrisClassic::OnActivate() {
+void CAppStateGameTetrisDual::OnActivate() {
     App* AppInstance = App::GetInstance();
     SDL_Renderer* Renderer = AppInstance->GetRenderer();
     SDL_Surface* Surf_Text_Buf = NULL;
 
-    int w = AppInstance->GetWindowWidth()/2 - TextureBank::Get("desk")->GetWidth()/2;
-
-    Tetris_1 = new CTetris;
-
-    Tetris_1->OnInit("icons", w+20, 20, w+260, 40, w+244, 156, w+244, 216);
-    Tetris_1->FigureFallingDown = true;
+    int w1, w2;
 
     const char* file = "fonts/Century_Gothic_Bold_Italic.ttf";
 
@@ -110,7 +163,32 @@ void CAppStateGameTetrisClassic::OnActivate() {
         CAppStateManager::SetActiveAppState(APPSTATE_NONE);
     }
 
-    SDL_Color color = {255 , 255, 0};
+    SDL_Color color = {255, 255, 0};
+
+    Tetris_1 = new CTetris;
+    Tetris_2 = new CTetris;
+
+    //--------------------------------------------------------------------------------
+    //Initialization of Tetris_1
+    //--------------------------------------------------------------------------------
+
+    w1 = TextureBank::Get("desk")->GetWidth();
+
+    Tetris_1->OnInit("icons", w1+20, 20, w1+260, 40, w1+244, 156, w1+244, 216, Tetris_2);
+    Tetris_1->FigureFallingDown = true;
+
+    //--------------------------------------------------------------------------------
+
+    //--------------------------------------------------------------------------------
+    //Initialization of Tetris_2
+    //--------------------------------------------------------------------------------
+
+    w2 = 0;
+
+    Tetris_2->OnInit("icons", w2+20, 20, w2+260, 40, w2+244, 156, w2+244, 216, Tetris_1);
+    Tetris_2->FigureFallingDown = true;
+
+    //--------------------------------------------------------------------------------
 
     const char* Title_Next = "Далее:";
     if((Surf_Text_Buf = TTF_RenderUTF8_Blended(Font_Desk_Titles, Title_Next, color)) == NULL) {
@@ -158,8 +236,10 @@ void CAppStateGameTetrisClassic::OnActivate() {
     SDL_FreeSurface(Surf_Text_Buf);
 }
 
-void CAppStateGameTetrisClassic::OnDeactivate() {
+void CAppStateGameTetrisDual::OnDeactivate() {
+
     delete Tetris_1;
+    delete Tetris_2;
 
     if(Tex_Title_Next) {
 		SDL_DestroyTexture(Tex_Title_Next);
@@ -195,11 +275,12 @@ void CAppStateGameTetrisClassic::OnDeactivate() {
     TTF_CloseFont(Font_Desk_Titles40);
 }
 
-void CAppStateGameTetrisClassic::OnLoop() {
+void CAppStateGameTetrisDual::OnLoop() {
     Tetris_1->OnLoop();
+    Tetris_2->OnLoop();
 }
 
-void CAppStateGameTetrisClassic::OnRender() {
+void CAppStateGameTetrisDual::OnRender() {
     App* AppInstance = App::GetInstance();
     SDL_Renderer* Renderer = AppInstance->GetRenderer();
     int w = 0, h = 0;
@@ -229,36 +310,58 @@ void CAppStateGameTetrisClassic::OnRender() {
                 w, h};
             SDL_RenderCopy(Renderer, Tex_Text_Pause, NULL, &Destination_Pause);
         } else {
+            int w1 = TextureBank::Get("desk")->GetWidth();
+            int w2 = 0;
+
             int desk_start_x = AppInstance->GetWindowWidth()/2 - TextureBank::Get("desk")->GetWidth()/2;
 
-            TextureBank::Get("desk")->Render(desk_start_x, 0);
+            TextureBank::Get("desk")->Render(w1, 0);
+            TextureBank::Get("desk")->Render(w2, 0);
 
             SDL_QueryTexture(Tex_Title_Next, NULL, NULL, &w, &h);
-            SDL_Rect Destination_Next = {
-                desk_start_x+(260 + (340-260)/2) - (w/2),
+            SDL_Rect Destination_Next_1 = {
+                w1+(260 + (340-260)/2) - (w/2),
                 40 - h,
                 w, h};
-            SDL_RenderCopy(Renderer, Tex_Title_Next, NULL, &Destination_Next);
+            SDL_RenderCopy(Renderer, Tex_Title_Next, NULL, &Destination_Next_1);
+            SDL_Rect Destination_Next_2 = {
+                w2+(260 + (340-260)/2) - (w/2),
+                40 - h,
+                w, h};
+            SDL_RenderCopy(Renderer, Tex_Title_Next, NULL, &Destination_Next_2);
 
             SDL_QueryTexture(Tex_Title_Lines, NULL, NULL, &w, &h);
-            SDL_Rect Destination_Lines = {
-                desk_start_x+(240 + (360-240)/2) - (w/2),
+            SDL_Rect Destination_Lines_1 = {
+                w1+(240 + (360-240)/2) - (w/2),
                 160 - h,
                 w, h};
-            SDL_RenderCopy(Renderer, Tex_Title_Lines, NULL, &Destination_Lines);
+            SDL_RenderCopy(Renderer, Tex_Title_Lines, NULL, &Destination_Lines_1);
+            SDL_Rect Destination_Lines_2 = {
+                w2+(240 + (360-240)/2) - (w/2),
+                160 - h,
+                w, h};
+            SDL_RenderCopy(Renderer, Tex_Title_Lines, NULL, &Destination_Lines_2);
 
             SDL_QueryTexture(Tex_Title_Level, NULL, NULL, &w, &h);
-            SDL_Rect Destination_Level = {
-                desk_start_x+(240 + (360-240)/2) - (w/2),
+            SDL_Rect Destination_Level_1 = {
+                w1+(240 + (360-240)/2) - (w/2),
                 220 - h,
                 w, h};
-            SDL_RenderCopy(Renderer, Tex_Title_Level, NULL, &Destination_Level);
+            SDL_RenderCopy(Renderer, Tex_Title_Level, NULL, &Destination_Level_1);
+            SDL_Rect Destination_Level_2 = {
+                w2+(240 + (360-240)/2) - (w/2),
+                220 - h,
+                w, h};
+            SDL_RenderCopy(Renderer, Tex_Title_Level, NULL, &Destination_Level_2);
 
             Tetris_1->OnRender();
+            Tetris_2->OnRender();
         }
     }
+
 }
 
-CAppStateGameTetrisClassic* CAppStateGameTetrisClassic::GetInstance() {
+CAppStateGameTetrisDual* CAppStateGameTetrisDual::GetInstance() {
     return &Instance;
 }
+

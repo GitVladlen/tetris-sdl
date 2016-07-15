@@ -26,8 +26,8 @@ class CTetris : public CTetrisEngine {
         std::string Blocks_Texture_ID;
         //Surfaces
 
-        SDL_Surface* Surf_Lines_Font;
-        SDL_Surface* Surf_Level_Font;
+        SDL_Texture* Tex_Lines;
+        SDL_Texture* Tex_Level;
         //Positions of elements on Display
         int DeskX, DeskY;
         int NextFigureX, NextFigureY;
@@ -80,9 +80,9 @@ class CTetris : public CTetrisEngine {
 
     public:
         //Interface functions
-        void MoveFigureLeft();
-        void MoveFigureRight();
-        void FigureRotate(); //Rotate in loop
+        void MoveFigureLeft(bool value);
+        void MoveFigureRight(bool value);
+        void FigureRotate(bool value); //Rotate in loop
         void SpeedUp();
         void SpeedDown();
         void Reset();

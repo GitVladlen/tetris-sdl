@@ -3,7 +3,9 @@
 #include <string>
 
 #include "TextureBank.h"
+#include "App.h"
 #include "Log.h"
+#include "Texture.h"
 
 //***********************************************************************
 //Static value for randomazing
@@ -15,8 +17,8 @@ long CTetris::RandBase = time(NULL);
 //Constructor
 //***********************************************************************
 CTetris::CTetris() {
-    Surf_Lines_Font = NULL;
-    Surf_Level_Font = NULL;
+    Tex_Lines = NULL;
+    Tex_Level = NULL;
     Font_Output = NULL;
     pOtherPlayer = NULL;
 }
@@ -48,6 +50,7 @@ bool CTetris::OnInit(std::string Texture_ID, int Desk_X, int Desk_Y, int NextFig
 
     FigureFallingDown = false;
     FrameRate       = 1000; //Milliseconds
+    FrameRateBuffer       = 0; //Milliseconds
     FrameRateRightLeft = 150; //Milliseconds
     FrameRateRotate = 200; //Milliseconds
     OldTime         = 0;
@@ -120,13 +123,7 @@ void CTetris::OnLoop() {
     if(Level != (Lines/20)) {
         LevelUp = true;
         Level = Lines/20;
-        //if(FrameRate > 100) FrameRate -= 100; //Milliseconds
-        //if(FrameRate < 100 && FrameRate > 20) FrameRate -= 20;
-        /*
-        if(FrameRate/2 > 0) {
-            FrameRate = FrameRate/2;
-        }
-        */
+
         if(FrameRateBuffer != 0) {
             if(FrameRateBuffer*0.7 > 0) {
                 FrameRateBuffer = FrameRateBuffer*0.7;
@@ -151,7 +148,6 @@ void CTetris::OnRender() {
                 int y = DeskY + r * BLOCK_SIZE;
 
                 TextureBank::Get(Blocks_Texture_ID)->Render(x, y, 0, (GetDeskCell(r,c)-1)*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-//                CSurface::OnDraw(Surf_Display, Surf_Blocks_Src, x, y, 0, (GetDeskCell(r,c)-1)*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
             }
         }
     }
@@ -166,94 +162,96 @@ void CTetris::OnRender() {
                     int y = NextFigureY + r * BLOCK_SIZE;
 
                     TextureBank::Get(Blocks_Texture_ID)->Render(x, y, 0, (NextFigure.GetCell(r,c)-1)*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
-//                    CSurface::OnDraw(Surf_Display, Surf_Blocks_Src, x, y, 0, (NextFigure.GetCell(r,c)-1)*BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
                 }
             }
         }
     }
 
-//    if(DeleteFullLinesFlag) {
-//        SDL_Color color;
-//        color.r = 255;
-//        color.g = 255;
-//        color.b = 0;
-//
-//        char msg1[10];
-//        sprintf(msg1,"%d",Lines);
-////        itoa(Lines, msg1, 10);
-//
-//        const char* msgLines = msg1;
-//
-//        if((Surf_Lines_Font = TTF_RenderText_Blended(Font_Output, msgLines, color)) == NULL) {
-//            fprintf(stderr,
-//                    "CTetris: TTF_RenderText_Blended Error: %s\n", TTF_GetError());
-//        }
-//
-//        DeleteFullLinesFlag = false;
-//    }
-//
-//    CSurface::OnDraw(Surf_Display, Surf_Lines_Font, LinesX, LinesY);
-//
-//    if(LevelUp) {
-//        SDL_Color color;
-//        color.r = 255;
-//        color.g = 255;
-//        color.b = 0;
-//
-//        char msg2[10];
-//        sprintf(msg2, "%d", Level);
-////        itoa(Level, msg2, 10);
-//
-//        const char* msgLevel = msg2;
-//
-//        if((Surf_Level_Font = TTF_RenderText_Blended(Font_Output, msgLevel, color)) == NULL) {
-//            fprintf(stderr,
-//                    "CTetris: TTF_RenderText_Blended Error: %s\n", TTF_GetError());
-//        }
-//
-//        LevelUp = false;
-//    }
-//
-//    CSurface::OnDraw(Surf_Display, Surf_Level_Font, LevelX, LevelY);
+    App* AppInstance = App::GetInstance();
+    SDL_Renderer* Renderer = AppInstance->GetRenderer();
 
+    SDL_Surface* Surf_Lines_Font = NULL;
+    SDL_Surface* Surf_Level_Font = NULL;
+
+    int w = 0;
+    int h = 0;
+
+    SDL_Color color;
+    color.r = 255;
+    color.g = 255;
+    color.b = 0;
+
+    if(DeleteFullLinesFlag) {
+        DeleteFullLinesFlag = false;
+    }
+
+    char msg1[10];
+    sprintf(msg1,"%d",Lines);
+    const char* msgLines = msg1;
+
+    if((Surf_Lines_Font = TTF_RenderText_Blended(Font_Output, msgLines, color)) == NULL) {
+        Log("CTetris: TTF_RenderText_Blended Error: %s\n", TTF_GetError());
+    }
+
+    if(Tex_Lines) {
+        SDL_DestroyTexture(Tex_Lines);
+        Tex_Lines = NULL;
+    }
+
+    Tex_Lines = Texture::SurfaceToTexture(Renderer, Surf_Lines_Font);
+
+    SDL_QueryTexture(Tex_Lines, NULL, NULL, &w, &h);
+    SDL_Rect Destination_Lines = {LinesX, LinesY, w, h};
+    SDL_RenderCopy(Renderer, Tex_Lines, NULL, &Destination_Lines);
+
+    if(LevelUp) {
+        LevelUp = false;
+    }
+
+    char msg2[10];
+    sprintf(msg2, "%d", Level);
+    const char* msgLevel = msg2;
+
+    if((Surf_Level_Font = TTF_RenderText_Blended(Font_Output, msgLevel, color)) == NULL) {
+        Log("CTetris: TTF_RenderText_Blended Error: %s\n", TTF_GetError());
+    }
+
+    if(Tex_Level) {
+        SDL_DestroyTexture(Tex_Level);
+        Tex_Level = NULL;
+    }
+    Tex_Level = Texture::SurfaceToTexture(Renderer, Surf_Level_Font);
+
+    SDL_QueryTexture(Tex_Level, NULL, NULL, &w, &h);
+    SDL_Rect Destination_Level = {LevelX, LevelY, w, h};
+    SDL_RenderCopy(Renderer, Tex_Level, NULL, &Destination_Level);
 }
 
 void CTetris::MoveFallingFigureDown() {
     Desk.MoveFigureTo(Desk.FigurePosition.row+1, Desk.FigurePosition.col);
 }
 
-void CTetris::MoveFigureRight() {
-    if(MoveRight) {
-        MoveRight = false;
-    } else {
-        MoveRight = true;
-    }
+void CTetris::MoveFigureRight(bool value) {
+    MoveRight = value;
 }
 
-void CTetris::MoveFigureLeft() {
-    if(MoveLeft) {
-        MoveLeft = false;
-    } else {
-        MoveLeft = true;
-    }
+void CTetris::MoveFigureLeft(bool value) {
+    MoveLeft = value;
 }
 
-void CTetris::FigureRotate() {
-    if(Rotate) {
-        Rotate = false;
-    } else {
-        Rotate = true;
-    }
+void CTetris::FigureRotate(bool value) {
+    Rotate = value;
 }
-
-
 
 void CTetris::RotateFigure() {
     Desk.RotateFigure();
 }
 
-void CTetris::SpeedUp() {
-    FrameRateBuffer = FrameRate;
+void CTetris::SpeedUp() {if(Tex_Lines) {
+		SDL_DestroyTexture(Tex_Lines);
+		Tex_Lines = NULL;
+	}
+    if (FrameRateBuffer == 0) FrameRateBuffer = FrameRate;
     FrameRate = 50;
 }
 
@@ -379,8 +377,16 @@ void CTetris::RandomizeFigures() {
 }
 
 void CTetris::OnCleanUp() {
-    if(Surf_Lines_Font) SDL_FreeSurface(Surf_Lines_Font);
-    if(Surf_Level_Font) SDL_FreeSurface(Surf_Level_Font);
+    if(Tex_Lines) {
+		SDL_DestroyTexture(Tex_Lines);
+		Tex_Lines = NULL;
+	}
+
+	if(Tex_Level) {
+		SDL_DestroyTexture(Tex_Level);
+		Tex_Level = NULL;
+	}
+
     if(Font_Output) TTF_CloseFont(Font_Output);
 
     pOtherPlayer = NULL;

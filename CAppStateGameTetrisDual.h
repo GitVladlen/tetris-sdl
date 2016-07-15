@@ -1,14 +1,14 @@
-#ifndef __CAPPSTATEGAMETETRISCLASSIC_H__
-    #define __CAPPSTATEGAMETETRISCLASSIC_H__
+#ifndef __CAPPSTATEGAMETETRISDUAL_H__
+    #define __CAPPSTATEGAMETETRISDUAL_H__
 
 #include <SDL2/SDL_ttf.h>
 #include <string>
 #include "CAppState.h"
 #include "CTetris.h"
 
-class CAppStateGameTetrisClassic : public CAppState {
+class CAppStateGameTetrisDual : public CAppState {
     private:
-        static CAppStateGameTetrisClassic Instance;
+        static CAppStateGameTetrisDual Instance;
 
         SDL_Texture* Tex_Title_Next;
         SDL_Texture* Tex_Title_Lines;
@@ -23,10 +23,11 @@ class CAppStateGameTetrisClassic : public CAppState {
 
 
     private:
-        CAppStateGameTetrisClassic();
+        CAppStateGameTetrisDual();
 
     private:
         CTetris* Tetris_1;
+        CTetris* Tetris_2;
 
     public:
         void OnKeyDown(SDL_Keycode sym);
@@ -43,7 +44,8 @@ class CAppStateGameTetrisClassic : public CAppState {
         void OnRender();
 
     public:
-        static CAppStateGameTetrisClassic* GetInstance();
+        static CAppStateGameTetrisDual* GetInstance();
 };
 
 #endif
+

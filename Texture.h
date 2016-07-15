@@ -41,6 +41,8 @@ class Texture {
 
 		int GetWidth();
 		int GetHeight();
+
+		static SDL_Texture* SurfaceToTexture( SDL_Renderer* renderer, SDL_Surface* surf );
 };
 
 #endif

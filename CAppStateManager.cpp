@@ -4,8 +4,7 @@
 #include "CAppStateIntro.h"
 #include "CAppStateMainMenu.h"
 #include "CAppStateGameTetrisClassic.h"
-//#include "CAppStateGameTetrisDual.h"
-
+#include "CAppStateGameTetrisDual.h"
 
 CAppState* CAppStateManager::ActiveAppState = 0;
 
@@ -29,7 +28,7 @@ void CAppStateManager::SetActiveAppState(int AppStateID) {
     if(AppStateID == APPSTATE_INTRO)    ActiveAppState = CAppStateIntro::GetInstance();
     if(AppStateID == APPSTATE_MAIN_MENU)    ActiveAppState = CAppStateMainMenu::GetInstance();
     if(AppStateID == APPSTATE_GAME_TETRIS_CLASSIC)    ActiveAppState = CAppStateGameTetrisClassic::GetInstance();
-//    if(AppStateID == APPSTATE_GAME_TETRIS_DUAL)    ActiveAppState = CAppStateGameTetrisDual::GetInstance();
+    if(AppStateID == APPSTATE_GAME_TETRIS_DUAL)    ActiveAppState = CAppStateGameTetrisDual::GetInstance();
 
     if(ActiveAppState) ActiveAppState->OnActivate();
 }

@@ -79,17 +79,7 @@ void App::Loop() {
 void App::Render() {
 	SDL_RenderClear(Renderer);
 
-//	SDL_Rect Rect;
-//    Rect.x = 0;
-//    Rect.y = 0;
-//    Rect.w = 100;
-//    Rect.h = 100;
-//    SDL_SetRenderDrawColor(Renderer, 100, 0, 0, 0);
-//    SDL_RenderFillRect(Renderer, &Rect);
-
     CAppStateManager::OnRender();
-
-//	TextureBank::Get("tex1")->Render(0, 0); // You should really check your pointers
 
 	SDL_RenderPresent(Renderer);
 }
@@ -123,14 +113,10 @@ int App::Execute(int argc, char* argv[]) {
 	while(Running) {
 		while(SDL_PollEvent(&Event) != 0) {
 			OnEvent(&Event);
-
-//			if(Event.type == SDL_QUIT) Running = false;
 		}
 
 		Loop();
 		Render();
-
-		SDL_Delay(1); // Breath
 	}
 
 	Cleanup();

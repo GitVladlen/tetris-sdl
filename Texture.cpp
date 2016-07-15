@@ -77,4 +77,16 @@ void Texture::Render(int X, int Y, int Width, int Height, int SX, int SY, int SW
 int Texture::GetWidth()  { return Width;  }
 int Texture::GetHeight() { return Height; }
 
+//------------------------------------------------------------------------------
+SDL_Texture* Texture::SurfaceToTexture(SDL_Renderer* renderer, SDL_Surface* surf )
+{
+	SDL_Texture* text;
+
+	text = SDL_CreateTextureFromSurface( renderer, surf );
+
+	SDL_FreeSurface( surf );
+
+	return text;
+}
+
 //==============================================================================
